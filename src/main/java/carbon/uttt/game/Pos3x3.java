@@ -6,36 +6,36 @@ public enum Pos3x3 {
     SW, S, SE;
 
     public static Pos3x3 fromXY(int x, int y) {
-        if (x == 0) {
-            if (y == 0) {
+        if (y == 0) {
+            if (x == 0) {
                 return NW;
             }
-            else if (y == 1) {
+            else if (x == 1) {
                 return N;
             }
-            else if (y == 2) {
+            else if (x == 2) {
                 return NE;
             }
         }
-        else if (x == 1) {
-            if (y == 0) {
+        else if (y == 1) {
+            if (x == 0) {
                 return W;
             }
-            else if (y == 1) {
+            else if (x == 1) {
                 return C;
             }
-            else if (y == 2) {
+            else if (x == 2) {
                 return E;
             }
         }
-        else if (x == 2) {
-            if (y == 0) {
+        else if (y == 2) {
+            if (x == 0) {
                 return SW;
             }
-            else if (y == 1) {
+            else if (x == 1) {
                 return S;
             }
-            else if (y == 2) {
+            else if (x == 2) {
                 return SE;
             }
         }
