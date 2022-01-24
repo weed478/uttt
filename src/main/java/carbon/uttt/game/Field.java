@@ -30,10 +30,6 @@ public class Field implements IField {
     public void draw(GraphicsContext gc) {
         gc.save();
 
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(0.1);
-        gc.strokeRect(0, 0, 1, 1);
-
         gc.setLineWidth(0.1);
 
         if (player == Player.X) {
