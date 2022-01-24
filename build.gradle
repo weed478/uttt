@@ -23,7 +23,7 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainClass = 'carbon.uttt.HelloApplication'
+    mainClass = 'carbon.uttt.UTTT'
 }
 
 javafx {
