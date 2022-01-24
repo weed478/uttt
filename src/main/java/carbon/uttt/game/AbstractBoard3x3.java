@@ -15,7 +15,7 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
 
                 gc.save();
                 gc.translate(x, y);
-                IField field = getFieldAt(pos);
+                IField field = getIField(pos);
                 field.draw(gc);
                 gc.restore();
             }
