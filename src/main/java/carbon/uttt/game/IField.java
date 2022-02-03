@@ -5,4 +5,6 @@ import carbon.uttt.gui.IDrawable;
 public interface IField extends IDrawable {
 
     Player getPlayer();
+
+    void reset();
 }

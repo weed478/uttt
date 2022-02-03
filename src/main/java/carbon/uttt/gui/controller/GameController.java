@@ -1,31 +1,45 @@
 package carbon.uttt.gui.controller;
 
-import carbon.uttt.game.BoardDP;
-import carbon.uttt.game.Player;
-import carbon.uttt.game.Pos3x3;
+import carbon.uttt.game.Game;
+import carbon.uttt.gui.IDrawable;
+import carbon.uttt.gui.IDrawableObserver;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 
-public class GameController {
+public class GameController implements IDrawableObserver {
 
-    private final BoardDP board = new BoardDP();
+    private final Game game = new Game();
 
     @FXML
     public Canvas canvas;
 
-    @FXML
-    public void initialize() {
-        board.getBoardMP(Pos3x3.NE).putPlayer(Pos3x3.SW, Player.X);
-        board.getBoardMP(Pos3x3.C).putPlayer(Pos3x3.NE, Player.O);
-        drawBoard();
+    public GameController() {
+        game.addDrawableObserver(this);
     }
 
-    private void drawBoard() {
+    @FXML
+    public void initialize() {
+        game.newGame();
+    }
+
+    public void updateUI() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.save();
         gc.scale(canvas.getWidth(), canvas.getHeight());
-        board.draw(gc);
+        game.draw(gc);
         gc.restore();
+    }
+
+    @Override
+    public void onDrawableStale(IDrawable drawable) {
+        if (drawable == game) {
+            if (Platform.isFxApplicationThread()) {
+                updateUI();
+            } else {
+                Platform.runLater(this::updateUI);
+            }
+        }
     }
 }

@@ -27,6 +27,11 @@ public class Field implements IField {
     }
 
     @Override
+    public void reset() {
+        player = Player.EMPTY;
+    }
+
+    @Override
     public void draw(GraphicsContext gc) {
         gc.save();
 

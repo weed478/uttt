@@ -8,6 +8,7 @@ import java.util.List;
 
 public class BoardMP extends AbstractBoard3x3 {
 
+    private boolean enableHighlight = false;
     private final List<List<Field>> cols;
 
     public BoardMP() {
@@ -39,6 +40,10 @@ public class BoardMP extends AbstractBoard3x3 {
         getField(pos).setPlayer(player);
     }
 
+    public void enableHighlight(boolean enabled) {
+        enableHighlight = enabled;
+    }
+
     @Override
     public void draw(GraphicsContext gc) {
         gc.save();
@@ -46,9 +51,11 @@ public class BoardMP extends AbstractBoard3x3 {
         gc.translate(0.05, 0.05);
         gc.scale(0.9, 0.9);
 
-        gc.setStroke(Color.BLACK);
-        gc.setLineWidth(0.03);
-        gc.strokeRoundRect(0, 0, 1, 1, 0.1, 0.1);
+        if (enableHighlight) {
+            gc.setStroke(Color.BLACK);
+            gc.setLineWidth(0.03);
+            gc.strokeRoundRect(0, 0, 1, 1, 0.1, 0.1);
+        }
 
         gc.translate(0.05, 0.05);
         gc.scale(0.9, 0.9);
@@ -72,5 +79,11 @@ public class BoardMP extends AbstractBoard3x3 {
         super.draw(gc);
 
         gc.restore();
+    }
+
+    @Override
+    public void reset() {
+        enableHighlight = false;
+        super.reset();
     }
 }

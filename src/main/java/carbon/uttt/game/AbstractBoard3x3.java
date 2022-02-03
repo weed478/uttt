@@ -9,18 +9,21 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
         gc.save();
         gc.scale(1./3, 1./3);
 
-        for (int x = 0; x < 3; x++) {
-            for (int y = 0; y < 3; y++) {
-                Pos3x3 pos = Pos3x3.fromXY(x, y);
-
-                gc.save();
-                gc.translate(x, y);
-                IField field = getIField(pos);
-                field.draw(gc);
-                gc.restore();
-            }
+        for (Pos3x3 pos : Pos3x3.values()) {
+            gc.save();
+            gc.translate(pos.getX(), pos.getY());
+            IField field = getIField(pos);
+            field.draw(gc);
+            gc.restore();
         }
 
         gc.restore();
+    }
+
+    @Override
+    public void reset() {
+        for (Pos3x3 p : Pos3x3.values()) {
+            getIField(p).reset();
+        }
     }
 }
