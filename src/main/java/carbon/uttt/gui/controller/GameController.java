@@ -1,6 +1,8 @@
 package carbon.uttt.gui.controller;
 
 import carbon.uttt.game.Game;
+import carbon.uttt.game.Pos3x3;
+import carbon.uttt.game.PosDPMP;
 import carbon.uttt.gui.IDrawable;
 import carbon.uttt.gui.IDrawableObserver;
 import javafx.application.Platform;
@@ -22,12 +24,17 @@ public class GameController implements IDrawableObserver {
     @FXML
     public void initialize() {
         game.newGame();
+        game.makeMove(new PosDPMP(Pos3x3.C, Pos3x3.NE));
+        game.makeMove(new PosDPMP(Pos3x3.NE, Pos3x3.NE));
+        game.makeMove(new PosDPMP(Pos3x3.NE, Pos3x3.C));
+        game.makeMove(new PosDPMP(Pos3x3.C, Pos3x3.N));
     }
 
     public void updateUI() {
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.save();
         gc.scale(canvas.getWidth(), canvas.getHeight());
+        gc.clearRect(0, 0, 1, 1);
         game.draw(gc);
         gc.restore();
     }
