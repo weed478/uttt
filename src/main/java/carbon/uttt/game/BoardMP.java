@@ -40,7 +40,7 @@ public class BoardMP extends AbstractBoard3x3 {
         getField(pos).setPlayer(player);
     }
 
-    public void enableHighlight(boolean enabled) {
+    public void highlight(boolean enabled) {
         enableHighlight = enabled;
     }
 
