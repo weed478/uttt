@@ -31,15 +31,6 @@ public class BoardMP extends AbstractBoard3x3 {
         return getField(pos);
     }
 
-    @Override
-    public Player getPlayer() {
-        return Player.EMPTY;
-    }
-
-    public void putPlayer(Pos3x3 pos, Player player) {
-        getField(pos).setPlayer(player);
-    }
-
     public void highlight(boolean enabled) {
         enableHighlight = enabled;
     }
