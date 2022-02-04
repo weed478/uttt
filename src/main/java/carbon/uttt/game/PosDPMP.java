@@ -31,4 +31,9 @@ public class PosDPMP {
     public int hashCode() {
         return Objects.hash(dp, mp);
     }
+
+    @Override
+    public String toString() {
+        return dp + "/" + mp;
+    }
 }
