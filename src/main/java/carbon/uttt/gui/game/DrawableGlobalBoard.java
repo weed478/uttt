@@ -19,6 +19,7 @@ public class DrawableGlobalBoard extends AbstractDrawableBoard3x3 {
      * @param board Global board to draw.
      */
     public DrawableGlobalBoard(GlobalBoard board) {
+        super(board);
         cols = new ArrayList<>();
         for (int x = 0; x < 3; x++) {
             List<DrawableLocalBoard> col = new ArrayList<>();

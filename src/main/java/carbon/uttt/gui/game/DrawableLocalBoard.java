@@ -22,6 +22,7 @@ public class DrawableLocalBoard extends AbstractDrawableBoard3x3 {
      * @param board Local board to draw.
      */
     public DrawableLocalBoard(LocalBoard board) {
+        super(board);
         cols = new ArrayList<>();
         for (int x = 0; x < 3; x++) {
             List<DrawableField> col = new ArrayList<>();
