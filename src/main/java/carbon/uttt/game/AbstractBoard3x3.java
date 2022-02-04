@@ -28,7 +28,7 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
             Player player = getIField(Pos3x3.fromXY(x, 0)).getFieldOwner();
             for (int y = 1; y < 3; y++) {
                 Pos3x3 pos = Pos3x3.fromXY(x, y);
-                if (!getIField(pos).getFieldOwner().equals(player)) {
+                if (getIField(pos).getFieldOwner() != player) {
                     player = null;
                     break;
                 }
@@ -41,7 +41,7 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
             Player player = getIField(Pos3x3.fromXY(0, y)).getFieldOwner();
             for (int x = 1; x < 3; x++) {
                 Pos3x3 pos = Pos3x3.fromXY(x, y);
-                if (!getIField(pos).getFieldOwner().equals(player)) {
+                if (getIField(pos).getFieldOwner() != player) {
                     player = null;
                     break;
                 }
@@ -54,7 +54,7 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
             Player player = getIField(Pos3x3.fromXY(0, 0)).getFieldOwner();
             for (int xy = 1; xy < 3; xy++) {
                 Pos3x3 pos = Pos3x3.fromXY(xy, xy);
-                if (!getIField(pos).getFieldOwner().equals(player)) {
+                if (getIField(pos).getFieldOwner() != player) {
                     player = null;
                     break;
                 }
@@ -67,7 +67,7 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
             Player player = getIField(Pos3x3.fromXY(0, 2)).getFieldOwner();
             for (int xy = 1; xy < 3; xy++) {
                 Pos3x3 pos = Pos3x3.fromXY(xy, 2 - xy);
-                if (!getIField(pos).getFieldOwner().equals(player)) {
+                if (getIField(pos).getFieldOwner() != player) {
                     player = null;
                     break;
                 }
