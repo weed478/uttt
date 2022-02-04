@@ -18,7 +18,8 @@ public class Game implements IDrawable {
         board.reset();
         currentPlayer = Player.X;
         moveHistory.clear();
-        highlightAvailableMovesDP();
+        highlightMovesDPMP(Set.of());
+        highlightMovesDP(availableMovesDP());
         notifyDrawableStale();
     }
 
@@ -26,8 +27,8 @@ public class Game implements IDrawable {
         return currentPlayer;
     }
 
-    public void makeMove(PosDPMP dpmp) {
-        if (!moveValid(dpmp)) {
+    public void makeMoveDPMP(PosDPMP dpmp) {
+        if (!moveValidDPMP(dpmp)) {
             throw new IllegalArgumentException("Illegal move: " + dpmp);
         }
         board.getBoardMP(dpmp.dp())
@@ -36,54 +37,54 @@ public class Game implements IDrawable {
         moveHistory.add(dpmp);
         currentPlayer = currentPlayer.nextPlayer();
         highlightMovesDPMP(Set.of());
-        highlightAvailableMovesDP();
+        highlightMovesDP(availableMovesDP());
         notifyDrawableStale();
     }
 
-    public void highlightMove(PosDPMP dpmp) {
-        if (dpmp == null) {
-            highlightMovesDPMP(Set.of());
-        }
-        else if (moveValid(dpmp)) {
+    public void highlightMoveDPMP(PosDPMP dpmp) {
+        if (moveValidDPMP(dpmp)) {
             highlightMovesDPMP(Set.of(dpmp));
         }
+        else {
+            highlightMovesDPMP(Set.of());
+        }
         notifyDrawableStale();
     }
 
-    private void highlightAvailableMovesDP() {
-        if (isFirstMove()) {
-            highlightMovesDP(Set.of(Pos3x3.values()));
-        }
-        else {
-            PosDPMP lastMove = moveHistory.get(moveHistory.size() - 1);
-            if (moveValidDP(lastMove.mp())) {
-                highlightMovesDP(Set.of(lastMove.mp()));
-            }
-            else {
-                highlightMovesDP(Arrays.stream(Pos3x3.values())
-                        .filter(this::moveValidDP)
-                        .collect(Collectors.toSet()));
-            }
-        }
-    }
-
+    /**
+     * Checks if DP move is valid.
+     * Move is valid when:
+     * - is not null
+     * - DP is not won
+     * - DP has empty fields
+     * - isFirstMove or DP == lastMove.MP or !isValid(DP(lastMove.MP))
+     */
     private boolean moveValidDP(Pos3x3 dp) {
-        return board.getBoardMP(dp).getPlayer().isEmpty() &&
+        return dp != null &&
+                board.getBoardMP(dp).getPlayer().isEmpty() &&
                 Arrays.stream(Pos3x3.values())
                         .anyMatch(mp -> board
                                 .getBoardMP(dp)
                                 .getField(mp)
                                 .getPlayer()
-                                .isEmpty());
+                                .isEmpty()) &&
+                (isFirstMove() || dp == lastMove().mp() || !moveValidDP(lastMove().mp()));
     }
 
-    private boolean isFirstMove() {
-        return moveHistory.isEmpty();
-    }
-
-    private boolean moveValid(PosDPMP dpmp) {
-        BoardMP bmp = board.getBoardMP(dpmp.dp());
-        return bmp.getPlayer().isEmpty() && bmp.getField(dpmp.mp()).getPlayer().isEmpty();
+    /**
+     * Checks if DPMP move is valid.
+     * Move is valid when:
+     * - is not null
+     * - DP move is valid
+     * - MP is empty
+     */
+    private boolean moveValidDPMP(PosDPMP dpmp) {
+        return dpmp != null &&
+                moveValidDP(dpmp.dp()) &&
+                board.getBoardMP(dpmp.dp())
+                        .getField(dpmp.mp())
+                        .getPlayer()
+                        .isEmpty();
     }
 
     private void highlightMovesDP(Set<Pos3x3> dps) {
@@ -100,6 +101,20 @@ public class Game implements IDrawable {
                         .highlight(dpmps.contains(new PosDPMP(dp, mp)));
             }
         }
+    }
+
+    private Set<Pos3x3> availableMovesDP() {
+        return Arrays.stream(Pos3x3.values())
+                .filter(this::moveValidDP)
+                .collect(Collectors.toSet());
+    }
+
+    private PosDPMP lastMove() {
+        return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size() - 1);
+    }
+
+    private boolean isFirstMove() {
+        return moveHistory.isEmpty();
     }
 
     public void addDrawableObserver(IDrawableObserver observer) {

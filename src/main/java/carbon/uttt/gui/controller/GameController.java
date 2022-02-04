@@ -39,16 +39,16 @@ public class GameController implements IDrawableObserver {
 
     private void onMouseClicked(MouseEvent e) {
         PosDPMP dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
-        game.makeMove(dpmp);
+        game.makeMoveDPMP(dpmp);
     }
 
     private void onMouseMoved(MouseEvent e) {
         PosDPMP dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
-        game.highlightMove(dpmp);
+        game.highlightMoveDPMP(dpmp);
     }
 
     private void onMouseExited(MouseEvent e) {
-        game.highlightMove(null);
+        game.highlightMoveDPMP(null);
     }
 
     private void updateUI() {
