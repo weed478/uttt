@@ -18,7 +18,7 @@ public class Game implements IDrawable {
         board.reset();
         currentPlayer = Player.X;
         moveHistory.clear();
-        highlightAvailableBoardsDP();
+        highlightAvailableMovesDP();
         notifyDrawableStale();
     }
 
@@ -35,21 +35,31 @@ public class Game implements IDrawable {
                 .setPlayer(currentPlayer);
         moveHistory.add(dpmp);
         currentPlayer = currentPlayer.nextPlayer();
-        highlightAvailableBoardsDP();
+        highlightAvailableMovesDP();
         notifyDrawableStale();
     }
 
-    private void highlightAvailableBoardsDP() {
+    public void highlightMove(PosDPMP dpmp) {
+        if (dpmp == null) {
+            highlightMovesDPMP(Set.of());
+        }
+        else if (moveValid(dpmp)) {
+            highlightMovesDPMP(Set.of(dpmp));
+        }
+        notifyDrawableStale();
+    }
+
+    private void highlightAvailableMovesDP() {
         if (isFirstMove()) {
-            highlightBoardsDP(Set.of(Pos3x3.values()));
+            highlightMovesDP(Set.of(Pos3x3.values()));
         }
         else {
             PosDPMP lastMove = moveHistory.get(moveHistory.size() - 1);
             if (moveValidDP(lastMove.mp())) {
-                highlightBoardsDP(Set.of(lastMove.mp()));
+                highlightMovesDP(Set.of(lastMove.mp()));
             }
             else {
-                highlightBoardsDP(Arrays.stream(Pos3x3.values())
+                highlightMovesDP(Arrays.stream(Pos3x3.values())
                         .filter(this::moveValidDP)
                         .collect(Collectors.toSet()));
             }
@@ -75,9 +85,19 @@ public class Game implements IDrawable {
         return bmp.getPlayer().isEmpty() && bmp.getField(dpmp.mp()).getPlayer().isEmpty();
     }
 
-    private void highlightBoardsDP(Set<Pos3x3> dps) {
+    private void highlightMovesDP(Set<Pos3x3> dps) {
         for (Pos3x3 p : Pos3x3.values()) {
-            board.getBoardMP(p).enableHighlight(dps.contains(p));
+            board.getBoardMP(p).highlight(dps.contains(p));
+        }
+    }
+
+    private void highlightMovesDPMP(Set<PosDPMP> dpmps) {
+        for (Pos3x3 dp : Pos3x3.values()) {
+            for (Pos3x3 mp : Pos3x3.values()) {
+                board.getBoardMP(dp)
+                        .getField(mp)
+                        .highlight(dpmps.contains(new PosDPMP(dp, mp)));
+            }
         }
     }
 
