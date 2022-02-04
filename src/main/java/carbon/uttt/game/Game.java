@@ -1,138 +1,96 @@
 package carbon.uttt.game;
 
-import carbon.uttt.gui.IDrawable;
-import carbon.uttt.gui.IDrawableObserver;
-import javafx.scene.canvas.GraphicsContext;
+import java.util.Arrays;
+import java.util.Stack;
 
-import java.util.*;
-import java.util.stream.Collectors;
+public class Game implements IGame {
 
-public class Game implements IDrawable {
+    private final GlobalBoard board = new GlobalBoard();
+    private Player currentPlayer = Player.X;
+    private final Stack<Pos9x9> moveHistory = new Stack<>();
 
-    private final Set<IDrawableObserver> drawableObservers = new HashSet<>();
-    private final BoardDP board = new BoardDP();
-    private Player currentPlayer = Player.EMPTY;
-    private final List<PosDPMP> moveHistory = new ArrayList<>();
-
-    public void newGame() {
-        board.reset();
-        currentPlayer = Player.X;
-        moveHistory.clear();
-        highlightMovesDPMP(Set.of());
-        highlightMovesDP(availableMovesDP());
-        notifyDrawableStale();
+    public boolean isFirstMove() {
+        return moveHistory.isEmpty();
     }
 
+    public Pos9x9 getLastMove() {
+        return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size() - 1);
+    }
+
+    @Override
+    public void reset() {
+        board.resetField();
+        currentPlayer = Player.X;
+        moveHistory.clear();
+    }
+
+    @Override
+    public GlobalBoard getBoard() {
+        return board;
+    }
+
+    @Override
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
 
-    public void makeMoveDPMP(PosDPMP dpmp) {
-        if (!moveValidDPMP(dpmp)) {
-            throw new IllegalArgumentException("Illegal move: " + dpmp);
+    @Override
+    public void makeMove(Pos9x9 move) {
+        if (!moveValid(move)) {
+            throw new IllegalArgumentException("Illegal move: " + move);
         }
-        board.getBoardMP(dpmp.dp())
-                .getField(dpmp.mp())
-                .setPlayer(currentPlayer);
-        moveHistory.add(dpmp);
+        board.setField(move, currentPlayer);
+        moveHistory.push(move);
         currentPlayer = currentPlayer.nextPlayer();
-        highlightMovesDPMP(Set.of());
-        highlightMovesDP(availableMovesDP());
-        notifyDrawableStale();
-    }
-
-    public void highlightMoveDPMP(PosDPMP dpmp) {
-        if (moveValidDPMP(dpmp)) {
-            highlightMovesDPMP(Set.of(dpmp));
-        }
-        else {
-            highlightMovesDPMP(Set.of());
-        }
-        notifyDrawableStale();
-    }
-
-    /**
-     * Checks if DP move is valid.
-     * Move is valid when:
-     * - is not null
-     * - DP is not won
-     * - DP has empty fields
-     * - isFirstMove or DP == lastMove.MP or !isValid(DP(lastMove.MP))
-     */
-    private boolean moveValidDP(Pos3x3 dp) {
-        return dp != null &&
-                board.getBoardMP(dp).getPlayer().isEmpty() &&
-                Arrays.stream(Pos3x3.values())
-                        .anyMatch(mp -> board
-                                .getBoardMP(dp)
-                                .getField(mp)
-                                .getPlayer()
-                                .isEmpty()) &&
-                (isFirstMove() || dp == lastMove().mp() || !moveValidDP(lastMove().mp()));
-    }
-
-    /**
-     * Checks if DPMP move is valid.
-     * Move is valid when:
-     * - is not null
-     * - DP move is valid
-     * - MP is empty
-     */
-    private boolean moveValidDPMP(PosDPMP dpmp) {
-        return dpmp != null &&
-                moveValidDP(dpmp.dp()) &&
-                board.getBoardMP(dpmp.dp())
-                        .getField(dpmp.mp())
-                        .getPlayer()
-                        .isEmpty();
-    }
-
-    private void highlightMovesDP(Set<Pos3x3> dps) {
-        for (Pos3x3 p : Pos3x3.values()) {
-            board.getBoardMP(p).highlight(dps.contains(p));
-        }
-    }
-
-    private void highlightMovesDPMP(Set<PosDPMP> dpmps) {
-        for (Pos3x3 dp : Pos3x3.values()) {
-            for (Pos3x3 mp : Pos3x3.values()) {
-                board.getBoardMP(dp)
-                        .getField(mp)
-                        .highlight(dpmps.contains(new PosDPMP(dp, mp)));
-            }
-        }
-    }
-
-    private Set<Pos3x3> availableMovesDP() {
-        return Arrays.stream(Pos3x3.values())
-                .filter(this::moveValidDP)
-                .collect(Collectors.toSet());
-    }
-
-    private PosDPMP lastMove() {
-        return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size() - 1);
-    }
-
-    private boolean isFirstMove() {
-        return moveHistory.isEmpty();
-    }
-
-    public void addDrawableObserver(IDrawableObserver observer) {
-        drawableObservers.add(observer);
-    }
-
-    public void removeDrawableObserver(IDrawableObserver observer) {
-        drawableObservers.remove(observer);
-    }
-
-    private void notifyDrawableStale() {
-        for (IDrawableObserver o : drawableObservers) {
-            o.onDrawableStale(this);
-        }
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
-        board.draw(gc);
+    public Pos9x9 undoMove() {
+        if (getLastMove() == null)
+            throw new IllegalArgumentException("No moves to undo");
+
+        board.setField(getLastMove(), null);
+
+        return moveHistory.pop();
+    }
+
+    @Override
+    public boolean moveValid(Pos9x9 move) {
+        /*
+         * Move is valid when:
+         * - is not null
+         * - local board is available
+         * - field is empty
+         */
+        return move != null &&
+                localBoardAvailable(move.gp()) &&
+                board.getLocalBoard(move.gp())
+                        .getField(move.lp())
+                        .getFieldOwner()
+                        == null;
+    }
+
+    /**
+     * Check if any move can be made on local board.
+     * @param gp 3x3 position of local board within global board.
+     * @return True if local board is available.
+     */
+    public boolean localBoardAvailable(Pos3x3 gp) {
+        /*
+         * Board is available when:
+         * - position is not null
+         * - local board is not won
+         * - local board has empty fields
+         * - isFirstMove or GP == lastMove.LP or lastMove.LP is not available
+         */
+        return gp != null &&
+                board.getLocalBoard(gp).getFieldOwner() == null &&
+                Arrays.stream(Pos3x3.values())
+                        .anyMatch(mp -> board
+                                .getLocalBoard(gp)
+                                .getField(mp)
+                                .getFieldOwner()
+                                == null) &&
+                (isFirstMove() || gp == getLastMove().lp() || !localBoardAvailable(getLastMove().lp()));
     }
 }

@@ -1,10 +1,20 @@
 package carbon.uttt.game;
 
+/**
+ * Position on a 3x3 board.
+ */
 public enum Pos3x3 {
     NW, N, NE,
      W, C,  E,
     SW, S, SE;
 
+    /**
+     * Create a position from x/y coordinates.
+     * 0/0 is top left, 2/0 is top right.
+     * @param x [0, 2]
+     * @param y [0, 2]
+     * @return 3x3 position
+     */
     public static Pos3x3 fromXY(int x, int y) {
         if (y == 0) {
             if (x == 0) {
@@ -43,6 +53,10 @@ public enum Pos3x3 {
         throw new IllegalArgumentException("Invalid x or y");
     }
 
+    /**
+     * Get X coordinate of this position.
+     * @return X coordinate [0, 2]
+     */
     public int getX() {
         switch (this) {
             case NW:
@@ -58,6 +72,10 @@ public enum Pos3x3 {
         }
     }
 
+    /**
+     * Get Y coordinate of this position.
+     * @return Y coordinate [0, 2]
+     */
     public int getY() {
         switch(this) {
             case NW:

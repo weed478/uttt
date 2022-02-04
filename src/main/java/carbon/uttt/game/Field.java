@@ -1,67 +1,34 @@
 package carbon.uttt.game;
 
-import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
-
+/**
+ * Single field on a local board.
+ */
 public class Field implements IField {
 
-    private Player player;
-    private boolean highlightEnabled = false;
+    private Player player = null;
 
-    public Field() {
-        this.player = Player.EMPTY;
-    }
-
+    /**
+     * Place a player on this field.
+     * @param p Player to place or null to clear.
+     */
     public void setPlayer(Player p) {
-        if (p == Player.EMPTY) {
-            throw new IllegalArgumentException("Cannot clear field");
-        }
-        if (player != Player.EMPTY) {
-            throw new IllegalArgumentException("Cannot change occupied field");
-        }
         player = p;
     }
 
-    public void highlight(boolean enabled) {
-        highlightEnabled = enabled;
-    }
-
+    /**
+     * Get player placed on this field.
+     * @return Player or null.
+     */
     @Override
-    public Player getPlayer() {
+    public Player getFieldOwner() {
         return player;
     }
 
+    /**
+     * Reset this field.
+     */
     @Override
-    public void reset() {
-        player = Player.EMPTY;
-    }
-
-    @Override
-    public void draw(GraphicsContext gc) {
-        gc.save();
-
-        gc.setLineWidth(0.1);
-
-        if (highlightEnabled) {
-            gc.setFill(Color.gray(0, 0.2));
-            gc.fillRect(0, 0, 1, 1);
-        }
-
-        if (player == Player.X) {
-            gc.beginPath();
-            gc.moveTo(0.3, 0.3);
-            gc.lineTo(0.7, 0.7);
-            gc.moveTo(0.7, 0.3);
-            gc.lineTo(0.3, 0.7);
-
-            gc.setStroke(Color.BLUE);
-            gc.stroke();
-        }
-        else if (player == Player.O) {
-            gc.setStroke(Color.RED);
-            gc.strokeOval(0.2, 0.2, 0.6, 0.6);
-        }
-
-        gc.restore();
+    public void resetField() {
+        player = null;
     }
 }

@@ -1,20 +1,22 @@
 package carbon.uttt.game;
 
+/**
+ * X or O player.
+ */
 public enum Player {
     X,
-    O,
-    EMPTY;
+    O;
 
-    public boolean isEmpty() {
-        return this == EMPTY;
-    }
-
+    /**
+     * Gets the player who has the next turn.
+     * @return Next player.
+     */
     public Player nextPlayer() {
         switch (this) {
             case X: return O;
             case O: return X;
             default:
-                throw new IllegalArgumentException("Player.EMPTY has no next");
+                throw new IllegalArgumentException("Player " + this + " has no next");
         }
     }
 }
