@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 public class Field implements IField {
 
     private Player player;
+    private boolean highlightEnabled = false;
 
     public Field() {
         this.player = Player.EMPTY;
@@ -19,6 +20,10 @@ public class Field implements IField {
             throw new IllegalArgumentException("Cannot change occupied field");
         }
         player = p;
+    }
+
+    public void highlight(boolean enabled) {
+        highlightEnabled = enabled;
     }
 
     @Override
@@ -36,6 +41,11 @@ public class Field implements IField {
         gc.save();
 
         gc.setLineWidth(0.1);
+
+        if (highlightEnabled) {
+            gc.setFill(Color.gray(0, 0.2));
+            gc.fillRect(0, 0, 1, 1);
+        }
 
         if (player == Player.X) {
             gc.beginPath();
