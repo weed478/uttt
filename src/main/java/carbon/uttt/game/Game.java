@@ -35,6 +35,7 @@ public class Game implements IDrawable {
                 .setPlayer(currentPlayer);
         moveHistory.add(dpmp);
         currentPlayer = currentPlayer.nextPlayer();
+        highlightMovesDPMP(Set.of());
         highlightAvailableMovesDP();
         notifyDrawableStale();
     }
