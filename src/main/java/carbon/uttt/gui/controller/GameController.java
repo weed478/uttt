@@ -1,10 +1,9 @@
 package carbon.uttt.gui.controller;
-
-import carbon.uttt.game.Game;
-import carbon.uttt.game.PosDPMP;
+import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.IDrawable;
 import carbon.uttt.gui.IDrawableObserver;
 import carbon.uttt.gui.MouseLocator;
+import carbon.uttt.gui.game.InteractiveGame;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -13,7 +12,7 @@ import javafx.scene.input.MouseEvent;
 
 public class GameController implements IDrawableObserver {
 
-    private final Game game = new Game();
+    private final InteractiveGame game = new InteractiveGame();
     private MouseLocator mouseLocator;
 
     @FXML
@@ -30,7 +29,7 @@ public class GameController implements IDrawableObserver {
                 canvas.heightProperty()
         );
 
-        game.newGame();
+        game.reset();
 
         canvas.setOnMouseClicked(this::onMouseClicked);
         canvas.setOnMouseMoved(this::onMouseMoved);
@@ -38,17 +37,17 @@ public class GameController implements IDrawableObserver {
     }
 
     private void onMouseClicked(MouseEvent e) {
-        PosDPMP dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
-        game.makeMoveDPMP(dpmp);
+        Pos9x9 dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
+        game.makeMove(dpmp);
     }
 
     private void onMouseMoved(MouseEvent e) {
-        PosDPMP dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
-        game.highlightMoveDPMP(dpmp);
+        Pos9x9 dpmp = mouseLocator.locateMouse(e.getX(), e.getY());
+        game.highlightMove(dpmp);
     }
 
     private void onMouseExited(MouseEvent e) {
-        game.highlightMoveDPMP(null);
+        game.highlightMove(null);
     }
 
     private void updateUI() {
