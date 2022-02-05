@@ -1,4 +1,5 @@
 package carbon.uttt.gui.controller;
+import carbon.uttt.ai.RandomAI;
 import carbon.uttt.game.Player;
 import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.MouseLocator;
@@ -20,6 +21,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Game scene controller.
@@ -76,16 +80,36 @@ public class GameController implements IInteractiveGameObserver {
      */
     private final BooleanProperty currentPlayerIsX = new SimpleBooleanProperty(true);
 
+    /**
+     * Null or time limit for this game session.
+     */
     private final Integer timeLimitSeconds;
 
+    /**
+     * Container of the time limit display.
+     * Used to hide the time limit when not used.
+     */
     @FXML
     public Node timeLimitContainer;
 
+    /**
+     * Shows current time limit.
+     */
     @FXML
     public Label timeLimitLabel;
 
     /**
-     * Creates a game session operating on given game instance.
+     * Counts down to the end of move time limit.
+     */
+    private Timer timeLimitTimeoutTimer = null;
+
+    /**
+     * Updates time limit label every second.
+     */
+    private Timer updateTimeLimitLabelTimer = null;
+
+    /**
+     * Creates a game session with given configuration.
      * @param configuration Game configuration.
      */
     public GameController(GameConfiguration configuration) {
@@ -122,6 +146,7 @@ public class GameController implements IInteractiveGameObserver {
                 .visibleProperty()
                 .bind(currentPlayerXLabel.visibleProperty().not());
 
+        // prepare time limit label
         if (timeLimitSeconds != null) {
             timeLimitLabel.setText(timeLimitSeconds.toString());
         }
@@ -134,11 +159,11 @@ public class GameController implements IInteractiveGameObserver {
         // make move if user clicked valid field
         Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
         if (game.moveValid(move)) {
-            boolean wasFirstMove = game.isFirstMove();
             game.makeMove(move);
-            if (wasFirstMove && timeLimitSeconds != null) {
-                // time limit starts only after first move
+            if (timeLimitSeconds != null) {
+                // time limit visible only after first move
                 timeLimitContainer.setVisible(true);
+                beginTurnTimeout();
             }
         }
     }
@@ -190,6 +215,12 @@ public class GameController implements IInteractiveGameObserver {
      */
     private void cleanup() {
         game.removeGameObserver(this);
+
+        if (timeLimitTimeoutTimer != null)
+            timeLimitTimeoutTimer.cancel();
+
+        if (updateTimeLimitLabelTimer != null)
+            updateTimeLimitLabelTimer.cancel();
     }
 
     /**
@@ -255,5 +286,55 @@ public class GameController implements IInteractiveGameObserver {
         else {
             Platform.runLater(f);
         }
+    }
+
+    /**
+     * Start turn time limit countdown.
+     */
+    private void beginTurnTimeout() {
+        new Thread(() -> {
+            // prepare time limit label
+            runOnUI(() -> timeLimitLabel.setText(timeLimitSeconds.toString()));
+
+            // cancel previous timers
+            if (updateTimeLimitLabelTimer != null)
+                updateTimeLimitLabelTimer.cancel();
+            if (timeLimitTimeoutTimer != null)
+                timeLimitTimeoutTimer.cancel();
+
+            // update label every second
+            updateTimeLimitLabelTimer = new Timer();
+            updateTimeLimitLabelTimer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    updateTimeLimitLabel();
+                }
+            }, 1000, 1000);
+
+            // end turn after time limit
+            timeLimitTimeoutTimer = new Timer();
+            timeLimitTimeoutTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    onTimeLimitReached();
+                }
+            }, 1000L * timeLimitSeconds);
+        }).start();
+    }
+
+    private void updateTimeLimitLabel() {
+        runOnUI(() -> {
+            int oldTime = Integer.parseInt(timeLimitLabel.getText());
+            int newTime = Math.max(0, oldTime - 1);
+            timeLimitLabel.setText(Integer.toString(newTime));
+        });
+    }
+
+    private void onTimeLimitReached() {
+        // make random move instead
+        Pos9x9 move = new RandomAI(game).decideMove();
+        game.makeMove(move);
+        // next player's turn
+        beginTurnTimeout();
     }
 }
