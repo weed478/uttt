@@ -4,6 +4,9 @@ import carbon.uttt.ai.IAI;
 import carbon.uttt.ai.RandomAI;
 import carbon.uttt.game.Pos9x9;
 
+/**
+ * Player v. AI game session.
+ */
 public class PvAIGame extends PvPGame {
 
     private final IAI ai = new RandomAI(this);

@@ -31,12 +31,12 @@
                   </Label>
                   <StackPane>
                      <children>
-                        <Label text="X" textFill="BLUE">
+                        <Label fx:id="currentPlayerXLabel" text="X" textFill="BLUE" visible="false">
                            <font>
                               <Font name="System Bold" size="30.0" />
                            </font>
                         </Label>
-                        <Label text="O" textFill="RED">
+                        <Label fx:id="currentPlayerOLabel" text="O" textFill="RED" visible="false">
                            <font>
                               <Font name="System Bold" size="30.0" />
                            </font>

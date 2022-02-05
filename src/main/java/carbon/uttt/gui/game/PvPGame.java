@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Drawable, human interactive game.
+ * Player v. Player game session.
  */
 public class PvPGame extends Game implements IInteractiveGame {
 
@@ -19,15 +19,17 @@ public class PvPGame extends Game implements IInteractiveGame {
         super.reset();
         updateHighlights();
         notifyDrawableStale();
+        notifyPlayerChanged(getCurrentPlayer());
     }
 
     @Override
     public void makeMove(Pos9x9 move) {
         Player p = getCurrentPlayer();
         super.makeMove(move);
-        notifyMoveMade(p, move);
         updateHighlights();
         notifyDrawableStale();
+        notifyMoveMade(p, move);
+        notifyPlayerChanged(getCurrentPlayer());
     }
 
     @Override
@@ -121,6 +123,12 @@ public class PvPGame extends Game implements IInteractiveGame {
     private void notifyMoveMade(Player player, Pos9x9 move) {
         for (IInteractiveGameObserver o : observers) {
             o.onMoveMade(this, player, move);
+        }
+    }
+
+    private void notifyPlayerChanged(Player newPlayer) {
+        for (IInteractiveGameObserver o : observers) {
+            o.onCurrentPlayerChanged(this, newPlayer);
         }
     }
 }
