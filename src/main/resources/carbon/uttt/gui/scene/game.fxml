@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -43,6 +44,14 @@
                         </Label>
                      </children>
                   </StackPane>
+                  <Pane HBox.hgrow="ALWAYS" />
+                  <HBox fx:id="timeLimitContainer" alignment="CENTER_LEFT" spacing="5.0" visible="false">
+                     <children>
+                        <Label text="Time left:" />
+                        <Label fx:id="timeLimitLabel" text="0" />
+                        <Label text="s" />
+                     </children>
+                  </HBox>
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

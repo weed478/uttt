@@ -2,6 +2,7 @@ package carbon.uttt.gui.controller;
 import carbon.uttt.game.Player;
 import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.MouseLocator;
+import carbon.uttt.gui.game.GameConfiguration;
 import carbon.uttt.gui.game.IInteractiveGame;
 import carbon.uttt.gui.game.IInteractiveGameObserver;
 import carbon.uttt.gui.scene.StartScene;
@@ -10,6 +11,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
@@ -74,12 +76,21 @@ public class GameController implements IInteractiveGameObserver {
      */
     private final BooleanProperty currentPlayerIsX = new SimpleBooleanProperty(true);
 
+    private final Integer timeLimitSeconds;
+
+    @FXML
+    public Node timeLimitContainer;
+
+    @FXML
+    public Label timeLimitLabel;
+
     /**
      * Creates a game session operating on given game instance.
-     * @param game Game to run.
+     * @param configuration Game configuration.
      */
-    public GameController(IInteractiveGame game) {
-        this.game = game;
+    public GameController(GameConfiguration configuration) {
+        this.game = configuration.game;
+        this.timeLimitSeconds = configuration.timeLimitSeconds;
         game.addGameObserver(this);
     }
 
@@ -110,6 +121,10 @@ public class GameController implements IInteractiveGameObserver {
         currentPlayerOLabel
                 .visibleProperty()
                 .bind(currentPlayerXLabel.visibleProperty().not());
+
+        if (timeLimitSeconds != null) {
+            timeLimitLabel.setText(timeLimitSeconds.toString());
+        }
     }
 
     /**
@@ -119,7 +134,12 @@ public class GameController implements IInteractiveGameObserver {
         // make move if user clicked valid field
         Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
         if (game.moveValid(move)) {
+            boolean wasFirstMove = game.isFirstMove();
             game.makeMove(move);
+            if (wasFirstMove && timeLimitSeconds != null) {
+                // time limit starts only after first move
+                timeLimitContainer.setVisible(true);
+            }
         }
     }
 

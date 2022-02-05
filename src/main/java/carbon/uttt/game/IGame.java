@@ -36,4 +36,9 @@ public interface IGame {
      * @return True if move is valid.
      */
     boolean moveValid(Pos9x9 move);
+
+    /**
+     * Returns whether the next move will be the first
+     */
+    boolean isFirstMove();
 }

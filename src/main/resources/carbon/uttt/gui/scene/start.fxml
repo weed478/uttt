@@ -2,7 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -25,6 +27,17 @@
       <Label text="Choose mode:" />
       <Button mnemonicParsing="false" onAction="#onPressPvP" text="Player vs Player" />
       <Button mnemonicParsing="false" onAction="#onPressPvAI" text="Player vs AI" />
+      <CheckBox fx:id="timeLimitCB" mnemonicParsing="false" text="Enable time limit" />
+      <HBox fx:id="timeLimitContainer" alignment="CENTER" visible="false">
+         <children>
+            <TextField fx:id="timeLimitTF" prefWidth="50.0" text="60" />
+            <Label text="seconds">
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </Label>
+         </children>
+      </HBox>
       <HBox alignment="BOTTOM_RIGHT" VBox.vgrow="ALWAYS">
          <children>
             <Label text="Jakub Karbowski" />

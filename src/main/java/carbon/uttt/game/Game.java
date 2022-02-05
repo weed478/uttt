@@ -9,10 +9,6 @@ public class Game implements IGame {
     private Player currentPlayer = Player.X;
     private final Stack<Pos9x9> moveHistory = new Stack<>();
 
-    public boolean isFirstMove() {
-        return moveHistory.isEmpty();
-    }
-
     public Pos9x9 getLastMove() {
         return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size() - 1);
     }
@@ -70,6 +66,11 @@ public class Game implements IGame {
                         .getField(move.lp())
                         .getFieldOwner()
                         == null;
+    }
+
+    @Override
+    public boolean isFirstMove() {
+        return moveHistory.isEmpty();
     }
 
     /**
