@@ -1,8 +1,6 @@
 package carbon.uttt.gui.game;
 
 import carbon.uttt.game.*;
-import carbon.uttt.gui.IDrawable;
-import carbon.uttt.gui.IDrawableObserver;
 import javafx.scene.canvas.GraphicsContext;
 
 import java.util.*;
@@ -11,21 +9,33 @@ import java.util.stream.Collectors;
 /**
  * Drawable, human interactive game.
  */
-public class InteractiveGame implements IDrawable {
+public class PvPGame extends Game implements IInteractiveGame {
 
-    protected final Game game = new Game();
-    private final Set<IDrawableObserver> drawableObservers = new HashSet<>();
-    private final DrawableGlobalBoard drawableBoard = new DrawableGlobalBoard(game.getBoard());
+    private final Set<IInteractiveGameObserver> observers = new HashSet<>();
+    private final DrawableGlobalBoard drawableBoard = new DrawableGlobalBoard(getBoard());
 
+    @Override
     public void reset() {
-        game.reset();
+        super.reset();
         updateHighlights();
         notifyDrawableStale();
     }
 
+    @Override
     public void makeMove(Pos9x9 move) {
-        game.makeMove(move);
+        super.makeMove(move);
         updateHighlights();
+        notifyDrawableStale();
+    }
+
+    @Override
+    public void highlightMove(Pos9x9 move) {
+        if (moveValid(move)) {
+            highlightMoves(List.of(move));
+        }
+        else {
+            highlightMoves(List.of());
+        }
         notifyDrawableStale();
     }
 
@@ -36,20 +46,6 @@ public class InteractiveGame implements IDrawable {
     private void updateHighlights() {
         highlightMoves(List.of());
         highlightLocalBoards(getAvailableLocalBoards());
-    }
-
-    /**
-     * Highlight move if valid.
-     * @param move 9x9 position.
-     */
-    public void highlightMove(Pos9x9 move) {
-        if (game.moveValid(move)) {
-            highlightMoves(List.of(move));
-        }
-        else {
-            highlightMoves(List.of());
-        }
-        notifyDrawableStale();
     }
 
     /**
@@ -81,7 +77,7 @@ public class InteractiveGame implements IDrawable {
             drawableBoard
                     .getDrawableLocalBoard(p9x9.gp())
                     .getDrawableField(p9x9.lp())
-                    .highlight(game.getCurrentPlayer());
+                    .highlight(getCurrentPlayer());
         }
     }
 
@@ -92,7 +88,7 @@ public class InteractiveGame implements IDrawable {
      */
     private List<Pos3x3> getAvailableLocalBoards() {
         return Arrays.stream(Pos3x3.values())
-                .filter(game::localBoardAvailable)
+                .filter(this::localBoardAvailable)
                 .collect(Collectors.toList());
     }
 
@@ -101,20 +97,22 @@ public class InteractiveGame implements IDrawable {
         drawableBoard.draw(gc);
     }
 
-    public void addDrawableObserver(IDrawableObserver observer) {
-        drawableObservers.add(observer);
+    @Override
+    public void addGameObserver(IInteractiveGameObserver o) {
+        observers.add(o);
     }
 
-    public void removeDrawableObserver(IDrawableObserver observer) {
-        drawableObservers.remove(observer);
+    @Override
+    public void removeGameObserver(IInteractiveGameObserver o) {
+        observers.remove(o);
     }
 
     /**
      * Notify observers should redraw.
      */
     private void notifyDrawableStale() {
-        for (IDrawableObserver o : drawableObservers) {
-            o.onDrawableStale(this);
+        for (IInteractiveGameObserver o : observers) {
+            o.onGameNeedsRedraw(this);
         }
     }
 }
