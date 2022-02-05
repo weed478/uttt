@@ -4,8 +4,6 @@ import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.MouseLocator;
 import carbon.uttt.gui.game.IInteractiveGame;
 import carbon.uttt.gui.game.IInteractiveGameObserver;
-import carbon.uttt.gui.game.PvAIGame;
-import carbon.uttt.gui.game.PvPGame;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -17,8 +15,7 @@ import javafx.scene.layout.GridPane;
 
 public class GameController implements IInteractiveGameObserver {
 
-//    private final IInteractiveGame game = new PvPGame();
-    private final IInteractiveGame game = new PvAIGame();
+    private final IInteractiveGame game;
     private MouseLocator mouseLocator;
 
     @FXML
@@ -30,7 +27,8 @@ public class GameController implements IInteractiveGameObserver {
     @FXML
     public ScrollPane historyScrollPane;
 
-    public GameController() {
+    public GameController(IInteractiveGame game) {
+        this.game = game;
         game.addGameObserver(this);
     }
 
