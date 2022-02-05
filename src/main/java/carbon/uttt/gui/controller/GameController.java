@@ -4,16 +4,20 @@ import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.MouseLocator;
 import carbon.uttt.gui.game.IInteractiveGame;
 import carbon.uttt.gui.game.IInteractiveGameObserver;
+import carbon.uttt.gui.scene.StartScene;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 
 /**
  * Game scene controller.
@@ -134,6 +138,38 @@ public class GameController implements IInteractiveGameObserver {
     private void onMouseExited(MouseEvent e) {
         // clear all highlights
         game.highlightMove(null);
+    }
+
+    /**
+     * New game button.
+     */
+    @FXML
+    public void onClickNewGame(ActionEvent e) {
+        launchNewGame();
+    }
+
+    /**
+     * Open new StartScene.
+     */
+    private void launchNewGame() {
+        cleanup();
+        try {
+            new StartScene((Stage) canvas.getScene().getWindow());
+        }
+        catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Couldn't start new game");
+            alert.setContentText(e.toString());
+            alert.show();
+        }
+    }
+
+    /**
+     * Safely shutdown game.
+     */
+    private void cleanup() {
+        game.removeGameObserver(this);
     }
 
     /**

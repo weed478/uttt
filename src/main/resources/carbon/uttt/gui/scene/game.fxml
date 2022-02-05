@@ -19,7 +19,7 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Button mnemonicParsing="false" text="New game">
+                  <Button mnemonicParsing="false" onAction="#onClickNewGame" text="New game">
                      <HBox.margin>
                         <Insets right="20.0" />
                      </HBox.margin>
