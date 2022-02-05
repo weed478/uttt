@@ -12,7 +12,7 @@ public class GameScene {
     public GameScene(Stage stage, IInteractiveGame game) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("game.fxml"));
         loader.setControllerFactory(t -> new GameController(game));
-        Scene scene = new Scene(loader.load(), 600, 400);
+        Scene scene = new Scene(loader.load(), -1, -1);
         stage.setScene(scene);
         stage.show();
     }
