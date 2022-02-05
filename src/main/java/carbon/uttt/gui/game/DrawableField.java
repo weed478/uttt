@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 public class DrawableField implements IDrawable {
 
     private final Field field;
-    private boolean highlightEnabled = false;
+    private Player highlightedPlayer = null;
 
     /**
      * Create a drawable wrapper for given field.
@@ -23,11 +23,11 @@ public class DrawableField implements IDrawable {
     }
 
     /**
-     * Highlight this field.
-     * @param enabled Enable highlight.
+     * Show which player is about to make a move.
+     * @param player Player or null to disable highlight.
      */
-    public void highlight(boolean enabled) {
-        highlightEnabled = enabled;
+    public void highlight(Player player) {
+        highlightedPlayer = player;
     }
 
     @Override
@@ -36,12 +36,17 @@ public class DrawableField implements IDrawable {
 
         gc.setLineWidth(0.1);
 
-        if (highlightEnabled) {
-            gc.setFill(Color.gray(0, 0.2));
-            gc.fillRect(0, 0, 1, 1);
+        Player player;
+
+        if (highlightedPlayer != null) {
+            player = highlightedPlayer;
+            gc.setGlobalAlpha(0.3);
+        }
+        else {
+            player = field.getFieldOwner();
         }
 
-        if (field.getFieldOwner() == Player.X) {
+        if (player == Player.X) {
             gc.beginPath();
             gc.moveTo(0.3, 0.3);
             gc.lineTo(0.7, 0.7);
@@ -51,10 +56,12 @@ public class DrawableField implements IDrawable {
             gc.setStroke(Color.BLUE);
             gc.stroke();
         }
-        else if (field.getFieldOwner() == Player.O) {
+        else if (player == Player.O) {
             gc.setStroke(Color.RED);
             gc.strokeOval(0.2, 0.2, 0.6, 0.6);
         }
+
+        gc.setGlobalAlpha(1);
 
         gc.restore();
     }

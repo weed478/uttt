@@ -84,13 +84,13 @@ public class InteractiveGame extends Game implements IDrawable {
         Pos9x9.values().forEach(p9x9 -> drawableBoard
                 .getDrawableLocalBoard(p9x9.gp())
                 .getDrawableField(p9x9.lp())
-                .highlight(false)
+                .highlight(null)
         );
         for (Pos9x9 p9x9 : moves) {
             drawableBoard
                     .getDrawableLocalBoard(p9x9.gp())
                     .getDrawableField(p9x9.lp())
-                    .highlight(true);
+                    .highlight(getCurrentPlayer());
         }
     }
 
