@@ -23,7 +23,9 @@ public class PvPGame extends Game implements IInteractiveGame {
 
     @Override
     public void makeMove(Pos9x9 move) {
+        Player p = getCurrentPlayer();
         super.makeMove(move);
+        notifyMoveMade(p, move);
         updateHighlights();
         notifyDrawableStale();
     }
@@ -113,6 +115,12 @@ public class PvPGame extends Game implements IInteractiveGame {
     private void notifyDrawableStale() {
         for (IInteractiveGameObserver o : observers) {
             o.onGameNeedsRedraw(this);
+        }
+    }
+
+    private void notifyMoveMade(Player player, Pos9x9 move) {
+        for (IInteractiveGameObserver o : observers) {
+            o.onMoveMade(this, player, move);
         }
     }
 }

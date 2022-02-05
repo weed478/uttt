@@ -1,4 +1,5 @@
 package carbon.uttt.gui.controller;
+import carbon.uttt.game.Player;
 import carbon.uttt.game.Pos9x9;
 import carbon.uttt.gui.MouseLocator;
 import carbon.uttt.gui.game.IInteractiveGame;
@@ -9,7 +10,9 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 
 public class GameController implements IInteractiveGameObserver {
 
@@ -19,6 +22,9 @@ public class GameController implements IInteractiveGameObserver {
 
     @FXML
     public Canvas canvas;
+
+    @FXML
+    public GridPane historyGridPane;
 
     public GameController() {
         game.addGameObserver(this);
@@ -65,12 +71,28 @@ public class GameController implements IInteractiveGameObserver {
 
     @Override
     public void onGameNeedsRedraw(IInteractiveGame game) {
-        if (game == this.game) {
-            if (Platform.isFxApplicationThread()) {
-                updateUI();
-            } else {
-                Platform.runLater(this::updateUI);
-            }
+        if (game != this.game) return;
+
+        if (Platform.isFxApplicationThread()) {
+            updateUI();
+        } else {
+            Platform.runLater(this::updateUI);
         }
+    }
+
+    @Override
+    public void onMoveMade(IInteractiveGame game, Player player, Pos9x9 pos) {
+        if (game != this.game) return;
+
+        addHistoryItem(player, pos);
+    }
+
+    private void addHistoryItem(Player player, Pos9x9 pos) {
+        historyGridPane.addRow(
+                historyGridPane.getRowCount(),
+                new Label(String.valueOf(historyGridPane.getRowCount())),
+                new Label(player.toString()),
+                new Label(pos.toString())
+        );
     }
 }
