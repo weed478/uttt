@@ -16,7 +16,7 @@
       <VBox HBox.hgrow="ALWAYS">
          <children>
             <Label text="History" />
-            <ScrollPane fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="historyScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
                <content>
                   <GridPane fx:id="historyGridPane" hgap="10.0" vgap="5.0">
                     <columnConstraints>

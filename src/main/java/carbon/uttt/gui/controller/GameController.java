@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 
@@ -25,6 +26,9 @@ public class GameController implements IInteractiveGameObserver {
 
     @FXML
     public GridPane historyGridPane;
+
+    @FXML
+    public ScrollPane historyScrollPane;
 
     public GameController() {
         game.addGameObserver(this);
@@ -42,6 +46,8 @@ public class GameController implements IInteractiveGameObserver {
         canvas.setOnMouseClicked(this::onMouseClicked);
         canvas.setOnMouseMoved(this::onMouseMoved);
         canvas.setOnMouseExited(this::onMouseExited);
+
+        historyScrollPane.vvalueProperty().bind(historyGridPane.heightProperty());
     }
 
     private void onMouseClicked(MouseEvent e) {
@@ -84,7 +90,11 @@ public class GameController implements IInteractiveGameObserver {
     public void onMoveMade(IInteractiveGame game, Player player, Pos9x9 pos) {
         if (game != this.game) return;
 
-        addHistoryItem(player, pos);
+        if (Platform.isFxApplicationThread()) {
+            addHistoryItem(player, pos);
+        } else {
+            Platform.runLater(() -> addHistoryItem(player, pos));
+        }
     }
 
     private void addHistoryItem(Player player, Pos9x9 pos) {
