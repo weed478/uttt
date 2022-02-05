@@ -41,4 +41,10 @@ public interface IGame {
      * Returns whether the next move will be the first
      */
     boolean isFirstMove();
+
+    /**
+     * Returns the winner of the game.
+     * @return Winner or null.
+     */
+    Player getWinner();
 }

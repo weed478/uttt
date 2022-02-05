@@ -73,6 +73,11 @@ public class Game implements IGame {
         return moveHistory.isEmpty();
     }
 
+    @Override
+    public Player getWinner() {
+        return board.getFieldOwner();
+    }
+
     /**
      * Check if any move can be made on local board.
      * @param gp 3x3 position of local board within global board.
