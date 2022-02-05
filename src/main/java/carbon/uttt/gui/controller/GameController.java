@@ -4,6 +4,7 @@ import carbon.uttt.gui.IDrawable;
 import carbon.uttt.gui.IDrawableObserver;
 import carbon.uttt.gui.MouseLocator;
 import carbon.uttt.gui.game.InteractiveGame;
+import carbon.uttt.gui.game.PvAIGame;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -12,7 +13,8 @@ import javafx.scene.input.MouseEvent;
 
 public class GameController implements IDrawableObserver {
 
-    private final InteractiveGame game = new InteractiveGame();
+//    private final InteractiveGame game = new InteractiveGame();
+    private final InteractiveGame game = new PvAIGame();
     private MouseLocator mouseLocator;
 
     @FXML

@@ -11,31 +11,22 @@ import java.util.stream.Collectors;
 /**
  * Drawable, human interactive game.
  */
-public class InteractiveGame extends Game implements IDrawable {
+public class InteractiveGame implements IDrawable {
 
+    protected final Game game = new Game();
     private final Set<IDrawableObserver> drawableObservers = new HashSet<>();
-    private final DrawableGlobalBoard drawableBoard = new DrawableGlobalBoard(getBoard());
+    private final DrawableGlobalBoard drawableBoard = new DrawableGlobalBoard(game.getBoard());
 
-    @Override
     public void reset() {
-        super.reset();
+        game.reset();
         updateHighlights();
         notifyDrawableStale();
     }
 
-    @Override
     public void makeMove(Pos9x9 move) {
-        super.makeMove(move);
+        game.makeMove(move);
         updateHighlights();
         notifyDrawableStale();
-    }
-
-    @Override
-    public Pos9x9 undoMove() {
-        Pos9x9 move = super.undoMove();
-        updateHighlights();
-        notifyDrawableStale();
-        return move;
     }
 
     /**
@@ -52,7 +43,7 @@ public class InteractiveGame extends Game implements IDrawable {
      * @param move 9x9 position.
      */
     public void highlightMove(Pos9x9 move) {
-        if (moveValid(move)) {
+        if (game.moveValid(move)) {
             highlightMoves(List.of(move));
         }
         else {
@@ -90,7 +81,7 @@ public class InteractiveGame extends Game implements IDrawable {
             drawableBoard
                     .getDrawableLocalBoard(p9x9.gp())
                     .getDrawableField(p9x9.lp())
-                    .highlight(getCurrentPlayer());
+                    .highlight(game.getCurrentPlayer());
         }
     }
 
@@ -101,7 +92,7 @@ public class InteractiveGame extends Game implements IDrawable {
      */
     private List<Pos3x3> getAvailableLocalBoards() {
         return Arrays.stream(Pos3x3.values())
-                .filter(this::localBoardAvailable)
+                .filter(game::localBoardAvailable)
                 .collect(Collectors.toList());
     }
 

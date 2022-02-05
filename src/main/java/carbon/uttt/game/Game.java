@@ -50,7 +50,7 @@ public class Game implements IGame {
             throw new IllegalArgumentException("No moves to undo");
 
         board.setField(getLastMove(), null);
-
+        currentPlayer = currentPlayer.nextPlayer();
         return moveHistory.pop();
     }
 
@@ -59,10 +59,12 @@ public class Game implements IGame {
         /*
          * Move is valid when:
          * - is not null
+         * - game is not won
          * - local board is available
          * - field is empty
          */
         return move != null &&
+                board.getFieldOwner() == null &&
                 localBoardAvailable(move.gp()) &&
                 board.getLocalBoard(move.gp())
                         .getField(move.lp())
