@@ -70,8 +70,9 @@ public class StartController {
                 "- standard 2 player game\n" +
                 "- play against a simple AI (random)\n" +
                 "You can enable a time limit for each move. " +
-                "After the time is out, a random move will be made for you.\n" +
-                "Boards where you can make a move are shown with a black border."
+                "After the time is out, a random move will be made for you. " +
+                "Boards where you can make a move are surrounded with a black border. " +
+                "The previous move is shown in green."
         );
         alert.show();
     }
