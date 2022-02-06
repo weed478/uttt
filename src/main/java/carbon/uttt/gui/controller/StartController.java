@@ -59,4 +59,20 @@ public class StartController {
             alert.show();
         }
     }
+
+    @FXML
+    public void showHelp(ActionEvent e) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Help");
+        alert.setHeaderText("Welcome to Ultimate Tic Tac Toe");
+        alert.setContentText(
+                "Modes:\n" +
+                "- standard 2 player game\n" +
+                "- play against a simple AI (random)\n" +
+                "You can enable a time limit for each move. " +
+                "After the time is out, a random move will be made for you.\n" +
+                "Boards where you can make a move are shown with a black border."
+        );
+        alert.show();
+    }
 }
