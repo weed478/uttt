@@ -303,7 +303,7 @@ public class GameController implements IInteractiveGameObserver {
                 timeLimitTimeoutTimer.cancel();
 
             // update label every second
-            updateTimeLimitLabelTimer = new Timer();
+            updateTimeLimitLabelTimer = new Timer(true);
             updateTimeLimitLabelTimer.scheduleAtFixedRate(new TimerTask() {
                 @Override
                 public void run() {
@@ -312,7 +312,7 @@ public class GameController implements IInteractiveGameObserver {
             }, 1000, 1000);
 
             // end turn after time limit
-            timeLimitTimeoutTimer = new Timer();
+            timeLimitTimeoutTimer = new Timer(true);
             timeLimitTimeoutTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
