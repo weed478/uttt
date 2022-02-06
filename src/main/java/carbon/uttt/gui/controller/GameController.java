@@ -170,12 +170,8 @@ public class GameController implements IInteractiveGameObserver {
             if (game.moveValid(move)) {
                 lockUI();
                 stopTimers();
+                runOnUI(() -> timeLimitContainer.setVisible(false));
                 game.makeMove(move);
-                if (!game.isGameOver() && timeLimitSeconds != null) {
-                    // time limit visible only after first move
-                    timeLimitContainer.setVisible(true);
-                    beginTurnTimeout();
-                }
             }
         }
     }
@@ -278,6 +274,11 @@ public class GameController implements IInteractiveGameObserver {
         if (game.isTwoPlayer() || newPlayer == Player.X) {
             unlockUI();
         }
+
+        if ((game.isTwoPlayer() || newPlayer == Player.X) && timeLimitSeconds != null && !game.isGameOver() && !game.isFirstMove()) {
+            // next player's turn
+            beginTurnTimeout();
+        }
     }
 
     /**
@@ -315,7 +316,10 @@ public class GameController implements IInteractiveGameObserver {
     private void beginTurnTimeout() {
         new Thread(() -> {
             // prepare time limit label
-            runOnUI(() -> timeLimitLabel.setText(timeLimitSeconds.toString()));
+            runOnUI(() -> {
+                timeLimitLabel.setText(timeLimitSeconds.toString());
+                timeLimitContainer.setVisible(true);
+            });
 
             // cancel previous timers
             stopTimers();
@@ -349,13 +353,10 @@ public class GameController implements IInteractiveGameObserver {
     }
 
     private void onTimeLimitReached() {
+        runOnUI(() -> timeLimitContainer.setVisible(false));
         // make random move instead
         Pos9x9 move = new RandomAI(game).decideMove();
         game.makeMove(move);
-        if (!game.isGameOver()) {
-            // next player's turn
-            beginTurnTimeout();
-        }
     }
 
     private synchronized void lockUI() {
