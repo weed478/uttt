@@ -68,7 +68,7 @@ public class StartController {
         alert.setContentText(
                 "Modes:\n" +
                 "- standard 2 player game\n" +
-                "- play against a simple AI (random)\n" +
+                "- play against an AI (it's actually good)\n" +
                 "You can enable a time limit for each move. " +
                 "After the time is out, a random move will be made for you. " +
                 "Boards where you can make a move are surrounded with a black border. " +
