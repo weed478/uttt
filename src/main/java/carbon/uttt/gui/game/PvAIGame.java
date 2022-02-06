@@ -34,4 +34,9 @@ public class PvAIGame extends PvPGame {
             aiThread.start();
         }
     }
+
+    @Override
+    public boolean isTwoPlayer() {
+        return false;
+    }
 }

@@ -109,6 +109,13 @@ public class GameController implements IInteractiveGameObserver {
     private Timer updateTimeLimitLabelTimer = null;
 
     /**
+     * User interaction lock.
+     * Used to stop the user from doing stuff while AI is thinking.
+     * Initially locked. Game reset unlocks.
+     */
+    private boolean interactionLock = true;
+
+    /**
      * Creates a game session with given configuration.
      * @param configuration Game configuration.
      */
@@ -124,6 +131,7 @@ public class GameController implements IInteractiveGameObserver {
     @FXML
     public void initialize() {
         // set game to initial state
+        // will unlock user input
         game.reset();
 
         // setup mouse events
@@ -156,15 +164,18 @@ public class GameController implements IInteractiveGameObserver {
      * Handle canvas clicks.
      */
     private void onMouseClicked(MouseEvent e) {
-        // make move if user clicked valid field
-        Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
-        if (game.moveValid(move)) {
-            stopTimers();
-            game.makeMove(move);
-            if (!game.isGameOver() && timeLimitSeconds != null) {
-                // time limit visible only after first move
-                timeLimitContainer.setVisible(true);
-                beginTurnTimeout();
+        if (isInteractionUnlocked()) {
+            // make move if user clicked valid field
+            Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
+            if (game.moveValid(move)) {
+                lockUI();
+                stopTimers();
+                game.makeMove(move);
+                if (!game.isGameOver() && timeLimitSeconds != null) {
+                    // time limit visible only after first move
+                    timeLimitContainer.setVisible(true);
+                    beginTurnTimeout();
+                }
             }
         }
     }
@@ -173,9 +184,11 @@ public class GameController implements IInteractiveGameObserver {
      * Handle mouse moving over canvas.
      */
     private void onMouseMoved(MouseEvent e) {
-        // highlight field under cursor if available
-        Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
-        game.highlightMove(move);
+        if (isInteractionUnlocked()) {
+            // highlight field under cursor if available
+            Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
+            game.highlightMove(move);
+        }
     }
 
     /**
@@ -261,6 +274,10 @@ public class GameController implements IInteractiveGameObserver {
         if (game != this.game) return;
         // update current player display
         runOnUI(() -> currentPlayerIsX.set(newPlayer == Player.X));
+
+        if (game.isTwoPlayer() || newPlayer == Player.X) {
+            unlockUI();
+        }
     }
 
     /**
@@ -339,5 +356,17 @@ public class GameController implements IInteractiveGameObserver {
             // next player's turn
             beginTurnTimeout();
         }
+    }
+
+    private synchronized void lockUI() {
+        interactionLock = true;
+    }
+
+    private synchronized boolean isInteractionUnlocked() {
+        return !interactionLock;
+    }
+
+    private synchronized void unlockUI() {
+        interactionLock = false;
     }
 }

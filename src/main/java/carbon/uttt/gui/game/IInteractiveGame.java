@@ -15,4 +15,9 @@ public interface IInteractiveGame extends IGame, IDrawable {
      * @param move 9x9 position.
      */
     void highlightMove(Pos9x9 move);
+
+    /**
+     * Does the game have 2 human players (or v. AI).
+     */
+    boolean isTwoPlayer();
 }

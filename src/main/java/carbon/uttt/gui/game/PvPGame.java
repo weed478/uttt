@@ -55,6 +55,11 @@ public class PvPGame extends Game implements IInteractiveGame {
         notifyDrawableStale();
     }
 
+    @Override
+    public boolean isTwoPlayer() {
+        return true;
+    }
+
     /**
      * Reset highlights and generate
      * new for currently available moves.
