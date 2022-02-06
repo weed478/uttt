@@ -1,8 +1,10 @@
 package carbon.uttt.ai;
 
+import carbon.uttt.game.IGame;
 import carbon.uttt.game.Player;
 import carbon.uttt.game.Pos9x9;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -10,18 +12,17 @@ import java.util.stream.Collectors;
 
 /**
  * Pure Monte Carlo Tree Search.
+ * Uses all CPU cores.
  */
 public class PMCTS implements IAI {
 
-    private final PureGame game;
+    private final IGame game;
 
     private final Player player;
 
-    private final Random r = new Random();
-
     private boolean keepRunning = true;
 
-    public PMCTS(PureGame game, Player player) {
+    public PMCTS(IGame game, Player player) {
         this.game = game;
         this.player = player;
     }
@@ -52,17 +53,52 @@ public class PMCTS implements IAI {
 
         Collections.shuffle(moves);
 
-        int[] scores = new int[moves.size()];
+        int numThreads = Runtime.getRuntime().availableProcessors();
+        List<Thread> threads = new ArrayList<>(numThreads);
+        int[][] scoresTh = new int[numThreads][moves.size()];
 
-        while (true) {
-            synchronized (this) {
-                if (!keepRunning) break;
-            }
-            // get score for each possible move
-            for (int i = 0; i < moves.size(); i++) {
-                scores[i] += rollout(moves.get(i));
+        for (int t = 0; t < numThreads; t++) {
+            int tNum = t;
+            Thread th = new Thread(() -> {
+                // thread local game copy
+                PureGame myGame = new PureGame(game);
+                while (true) {
+                    synchronized (this) {
+                        if (!keepRunning) break;
+                    }
+                    // get score for each possible move
+                    for (int i = 0; i < moves.size(); i++) {
+                        scoresTh[tNum][i] += rollout(myGame, player, moves.get(i));
+                    }
+                }
+            });
+            th.setDaemon(true);
+            th.start();
+            threads.add(th);
+        }
+
+        // wait for threads
+        for (int t = 0; t < threads.size(); t++) {
+            try {
+                threads.get(t).join();
+            } catch (InterruptedException e) {
+                // retry joining
+                t--;
             }
         }
+
+        // reduce scores
+        int[] scores = new int[moves.size()];
+        for (int i = 0; i < moves.size(); i++) {
+            for (int t = 0; t < numThreads; t++) {
+                scores[i] += scoresTh[t][i];
+            }
+        }
+
+        for (int i : scores) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
 
         // choose move with best score
         int bestI = 0;
@@ -77,10 +113,11 @@ public class PMCTS implements IAI {
         return moves.get(bestI);
     }
 
-    private int rollout(Pos9x9 initialMove) {
+    private static int rollout(PureGame game, Player player, Pos9x9 initialMove) {
+        Random r = new Random();
         game.makeMove(initialMove);
-        // simulate game till end
         int numMovesMade = 1;
+        // simulate game till end
         while (true) {
             // get valid moves
             List<Pos9x9> moves = Pos9x9
@@ -103,12 +140,14 @@ public class PMCTS implements IAI {
             game.undoMove();
         }
 
+        // score based on result
         if (winner == player) {
-            return 0;
+            return 1;
         }
         if (winner == null) {
             return 0;
         }
-        return -1;
+        // punish losing
+        return -2;
     }
 }
