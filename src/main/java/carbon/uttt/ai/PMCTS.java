@@ -37,8 +37,6 @@ public class PMCTS implements IAI {
                 .filter(game::moveValid)
                 .collect(Collectors.toList());
 
-        Collections.shuffle(moves);
-
         if (moves.isEmpty()) {
             throw new IllegalArgumentException("Cannot make a move");
         }
@@ -46,6 +44,8 @@ public class PMCTS implements IAI {
         if (moves.size() == 1) {
             return moves.get(0);
         }
+
+        Collections.shuffle(moves);
 
         // get score for each possible move
         int[] scores = new int[moves.size()];
@@ -88,9 +88,9 @@ public class PMCTS implements IAI {
                     .values()
                     .filter(game::moveValid)
                     .collect(Collectors.toList());
-            Collections.shuffle(moves);
             // is game is over?
             if (moves.isEmpty()) break;
+            Collections.shuffle(moves);
             // make random move
             int i = r.nextInt(moves.size());
             game.makeMove(moves.get(i));
