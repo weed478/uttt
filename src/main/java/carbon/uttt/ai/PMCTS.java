@@ -105,7 +105,7 @@ public class PMCTS implements IAI {
         }
 
         if (winner == player) {
-            return 1;
+            return 0;
         }
         if (winner == null) {
             return 0;
