@@ -17,20 +17,25 @@ public class PMCTS implements IAI {
 
     private final Player player;
 
-    /**
-     * Number of samples to take per move.
-     */
-    private final int numSamples = 10;
-
     private final Random r = new Random();
+
+    private boolean keepRunning = true;
 
     public PMCTS(PureGame game, Player player) {
         this.game = game;
         this.player = player;
     }
 
+    public synchronized void stopComputation() {
+        keepRunning = false;
+    }
+
     @Override
     public Pos9x9 decideMove() {
+        synchronized (this) {
+            keepRunning = true;
+        }
+
         // get all valid moves
         List<Pos9x9> moves = Pos9x9
                 .values()
@@ -47,11 +52,16 @@ public class PMCTS implements IAI {
 
         Collections.shuffle(moves);
 
-        // get score for each possible move
         int[] scores = new int[moves.size()];
-        for (int i = 0; i < moves.size(); i++) {
-            int score = simulateGames(moves.get(i));
-            scores[i] = score;
+
+        while (true) {
+            synchronized (this) {
+                if (!keepRunning) break;
+            }
+            // get score for each possible move
+            for (int i = 0; i < moves.size(); i++) {
+                scores[i] += rollout(moves.get(i));
+            }
         }
 
         // choose move with best score
@@ -67,21 +77,10 @@ public class PMCTS implements IAI {
         return moves.get(bestI);
     }
 
-    private int simulateGames(Pos9x9 initialMove) {
-        int score = 0;
+    private int rollout(Pos9x9 initialMove) {
         game.makeMove(initialMove);
-
-        for (int i = 0; i < numSamples; i++) {
-            score += rollout();
-        }
-
-        game.undoMove();
-        return score;
-    }
-
-    private int rollout() {
         // simulate game till end
-        int numMovesMade = 0;
+        int numMovesMade = 1;
         while (true) {
             // get valid moves
             List<Pos9x9> moves = Pos9x9
