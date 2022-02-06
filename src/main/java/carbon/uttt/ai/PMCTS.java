@@ -20,23 +20,18 @@ public class PMCTS implements IAI {
 
     private final Player player;
 
+    private final long computationTimeoutMs;
+
     private boolean keepRunning = true;
 
-    public PMCTS(IGame game, Player player) {
+    public PMCTS(IGame game, Player player, long computationTimeoutMs) {
         this.game = game;
         this.player = player;
-    }
-
-    public synchronized void stopComputation() {
-        keepRunning = false;
+        this.computationTimeoutMs = computationTimeoutMs;
     }
 
     @Override
     public Pos9x9 decideMove() {
-        synchronized (this) {
-            keepRunning = true;
-        }
-
         // get all valid moves
         List<Pos9x9> moves = Pos9x9
                 .values()
@@ -57,6 +52,8 @@ public class PMCTS implements IAI {
         List<Thread> threads = new ArrayList<>(numThreads);
         int[][] scoresTh = new int[numThreads][moves.size()];
 
+        keepRunning = true;
+
         for (int t = 0; t < numThreads; t++) {
             int tNum = t;
             Thread th = new Thread(() -> {
@@ -75,6 +72,14 @@ public class PMCTS implements IAI {
             th.setDaemon(true);
             th.start();
             threads.add(th);
+        }
+
+        try {
+            Thread.sleep(computationTimeoutMs);
+        } catch (InterruptedException ignored) {}
+
+        synchronized (this) {
+            keepRunning = false;
         }
 
         // wait for threads
