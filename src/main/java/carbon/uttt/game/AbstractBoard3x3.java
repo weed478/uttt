@@ -3,7 +3,10 @@ package carbon.uttt.game;
 /**
  * Universal board implementation.
  */
-public abstract class AbstractBoard3x3 implements IBoard3x3 {
+public abstract class AbstractBoard3x3 implements IBoard3x3, ICachingObject {
+
+    private boolean fieldOwnerCacheValid = false;
+    private Player fieldOwnerCache;
 
     /**
      * Reset this board.
@@ -21,6 +24,18 @@ public abstract class AbstractBoard3x3 implements IBoard3x3 {
      */
     @Override
     public Player getFieldOwner() {
+        if (fieldOwnerCacheValid) return fieldOwnerCache;
+        fieldOwnerCache = calculateFieldOwner();
+        fieldOwnerCacheValid = true;
+        return fieldOwnerCache;
+    }
+
+    @Override
+    public void invalidateCache() {
+        fieldOwnerCacheValid = false;
+    }
+
+    private Player calculateFieldOwner() {
         // find 3 in a row
 
         // vertical

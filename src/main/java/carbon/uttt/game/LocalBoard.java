@@ -10,12 +10,15 @@ public class LocalBoard extends AbstractBoard3x3 {
 
     private final List<List<Field>> cols;
 
-    public LocalBoard() {
+    public LocalBoard(GlobalBoard parent) {
         cols = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             List<Field> col = new ArrayList<>();
             for (int j = 0; j < 3; j++) {
-                col.add(new Field());
+                Field f = new Field();
+                col.add(f);
+                f.addCachingObject(this);
+                f.addCachingObject(parent);
             }
             cols.add(col);
         }
