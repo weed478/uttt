@@ -12,7 +12,9 @@ public class GlobalBoard extends AbstractBoard3x3 {
         for (int i = 0; i < 3; i++) {
             List<LocalBoard> col = new ArrayList<>();
             for (int j = 0; j < 3; j++) {
-                col.add(new LocalBoard(this));
+                LocalBoard board = new LocalBoard();
+                col.add(board);
+                board.addCachingObject(this);
             }
             cols.add(col);
         }

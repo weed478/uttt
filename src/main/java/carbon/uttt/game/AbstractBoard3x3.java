@@ -1,12 +1,43 @@
 package carbon.uttt.game;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Universal board implementation.
  */
 public abstract class AbstractBoard3x3 implements IBoard3x3, ICachingObject {
 
     private boolean fieldOwnerCacheValid = false;
+
     private Player fieldOwnerCache;
+
+    private final Set<ICachingObject> cachingObjects = new HashSet<>();
+
+    /**
+     * Add object that caches a computation based on this board.
+     */
+    public void addCachingObject(ICachingObject o) {
+        cachingObjects.add(o);
+    }
+
+    /**
+     * Remove caching object.
+     */
+    public void removeCachingObject(ICachingObject o) {
+        cachingObjects.remove(o);
+    }
+
+    /**
+     * Notify all subscribed objects that they
+     * need to recompute their cache because
+     * this board's winner has changed.
+     */
+    private void notifyCacheInvalid() {
+        for (ICachingObject o : cachingObjects) {
+            o.invalidateCache();
+        }
+    }
 
     /**
      * Reset this board.
@@ -25,8 +56,12 @@ public abstract class AbstractBoard3x3 implements IBoard3x3, ICachingObject {
     @Override
     public Player getFieldOwner() {
         if (fieldOwnerCacheValid) return fieldOwnerCache;
+        Player oldOwner = fieldOwnerCache;
         fieldOwnerCache = calculateFieldOwner();
         fieldOwnerCacheValid = true;
+        if (fieldOwnerCache != oldOwner) {
+            notifyCacheInvalid();
+        }
         return fieldOwnerCache;
     }
 

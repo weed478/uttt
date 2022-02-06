@@ -10,7 +10,7 @@ public class LocalBoard extends AbstractBoard3x3 {
 
     private final List<List<Field>> cols;
 
-    public LocalBoard(GlobalBoard parent) {
+    public LocalBoard() {
         cols = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             List<Field> col = new ArrayList<>();
@@ -18,7 +18,6 @@ public class LocalBoard extends AbstractBoard3x3 {
                 Field f = new Field();
                 col.add(f);
                 f.addCachingObject(this);
-                f.addCachingObject(parent);
             }
             cols.add(col);
         }

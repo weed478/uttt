@@ -40,14 +40,25 @@ public class Field implements IField {
         setPlayer(null);
     }
 
+    /**
+     * Add object that caches a computation based on this field.
+     */
     public void addCachingObject(ICachingObject o) {
         cachingObjects.add(o);
     }
 
+    /**
+     * Remove caching object.
+     */
     public void removeCachingObject(ICachingObject o) {
         cachingObjects.remove(o);
     }
 
+    /**
+     * Notify all subscribed objects that they
+     * need to recompute their cache because
+     * this field has changed.
+     */
     private void notifyCacheInvalid() {
         for (ICachingObject o : cachingObjects) {
             o.invalidateCache();
