@@ -54,4 +54,9 @@ public interface IGame {
      * Returns a list of all moves made so far (in order).
      */
     List<Pos9x9> getMoveHistory();
+
+    /**
+     * Returns true if no more moves can be made.
+     */
+    boolean isGameOver();
 }

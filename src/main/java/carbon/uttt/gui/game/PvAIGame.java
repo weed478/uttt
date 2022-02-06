@@ -14,7 +14,7 @@ public class PvAIGame extends PvPGame {
     @Override
     public void makeMove(Pos9x9 move) {
         super.makeMove(move);
-        if (getWinner() == null) {
+        if (!isGameOver()) {
             IAI ai = new PMCTS(new PureGame(this), Player.O);
             super.makeMove(ai.decideMove());
         }

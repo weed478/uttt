@@ -161,7 +161,7 @@ public class GameController implements IInteractiveGameObserver {
         if (game.moveValid(move)) {
             stopTimers();
             game.makeMove(move);
-            if (game.getWinner() == null && timeLimitSeconds != null) {
+            if (!game.isGameOver() && timeLimitSeconds != null) {
                 // time limit visible only after first move
                 timeLimitContainer.setVisible(true);
                 beginTurnTimeout();
@@ -335,7 +335,7 @@ public class GameController implements IInteractiveGameObserver {
         // make random move instead
         Pos9x9 move = new RandomAI(game).decideMove();
         game.makeMove(move);
-        if (game.getWinner() == null) {
+        if (!game.isGameOver()) {
             // next player's turn
             beginTurnTimeout();
         }

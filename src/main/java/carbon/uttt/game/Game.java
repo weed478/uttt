@@ -82,6 +82,11 @@ public class Game implements IGame {
         return moveHistory;
     }
 
+    @Override
+    public boolean isGameOver() {
+        return Arrays.stream(Pos3x3.values()).noneMatch(this::localBoardAvailable);
+    }
+
     /**
      * Check if any move can be made on local board.
      * @param gp 3x3 position of local board within global board.
