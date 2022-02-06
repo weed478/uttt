@@ -30,8 +30,10 @@ public abstract class AbstractDrawableBoard3x3 implements IDrawable {
     public void draw(GraphicsContext gc) {
         gc.save();
 
+        double oldAlpha = gc.getGlobalAlpha();
+
         if (board.getFieldOwner() != null)
-            gc.setGlobalAlpha(0.2);
+            gc.setGlobalAlpha(oldAlpha * 0.2);
 
         gc.save();
         gc.scale(1./3, 1./3);
@@ -45,7 +47,7 @@ public abstract class AbstractDrawableBoard3x3 implements IDrawable {
         gc.restore();
 
         if (board.getFieldOwner() != null)
-            gc.setGlobalAlpha(1);
+            gc.setGlobalAlpha(oldAlpha);
 
         if (board.getFieldOwner() == Player.X) {
             gc.beginPath();
