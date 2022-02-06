@@ -159,8 +159,9 @@ public class GameController implements IInteractiveGameObserver {
         // make move if user clicked valid field
         Pos9x9 move = mouseLocator.locateMouse(e.getX(), e.getY());
         if (game.moveValid(move)) {
+            stopTimers();
             game.makeMove(move);
-            if (timeLimitSeconds != null) {
+            if (game.getWinner() == null && timeLimitSeconds != null) {
                 // time limit visible only after first move
                 timeLimitContainer.setVisible(true);
                 beginTurnTimeout();
@@ -215,7 +216,10 @@ public class GameController implements IInteractiveGameObserver {
      */
     private void cleanup() {
         game.removeGameObserver(this);
+        stopTimers();
+    }
 
+    private void stopTimers() {
         if (timeLimitTimeoutTimer != null)
             timeLimitTimeoutTimer.cancel();
 
@@ -297,10 +301,7 @@ public class GameController implements IInteractiveGameObserver {
             runOnUI(() -> timeLimitLabel.setText(timeLimitSeconds.toString()));
 
             // cancel previous timers
-            if (updateTimeLimitLabelTimer != null)
-                updateTimeLimitLabelTimer.cancel();
-            if (timeLimitTimeoutTimer != null)
-                timeLimitTimeoutTimer.cancel();
+            stopTimers();
 
             // update label every second
             updateTimeLimitLabelTimer = new Timer(true);
@@ -334,7 +335,9 @@ public class GameController implements IInteractiveGameObserver {
         // make random move instead
         Pos9x9 move = new RandomAI(game).decideMove();
         game.makeMove(move);
-        // next player's turn
-        beginTurnTimeout();
+        if (game.getWinner() == null) {
+            // next player's turn
+            beginTurnTimeout();
+        }
     }
 }
