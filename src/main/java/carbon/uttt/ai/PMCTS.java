@@ -147,12 +147,12 @@ public class PMCTS implements IAI {
 
         // score based on result
         if (winner == player) {
-            return 1;
+            return 2;
         }
         if (winner == null) {
             return 0;
         }
         // punish losing
-        return -2;
+        return -1;
     }
 }
