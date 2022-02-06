@@ -13,6 +13,9 @@ public class GameConfiguration {
         }
         else {
             this.timeLimitSeconds = Integer.parseInt(timeLimit);
+            if (timeLimitSeconds < 1) {
+                throw new IllegalArgumentException("Time limit too short");
+            }
         }
     }
 }
