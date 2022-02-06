@@ -84,7 +84,7 @@ public class Game implements IGame {
 
     @Override
     public boolean isGameOver() {
-        return Arrays.stream(Pos3x3.values()).noneMatch(this::localBoardAvailable);
+        return board.getFieldOwner() != null || Arrays.stream(Pos3x3.values()).noneMatch(this::localBoardAvailable);
     }
 
     /**
