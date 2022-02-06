@@ -31,7 +31,7 @@
       <CheckBox fx:id="timeLimitCB" mnemonicParsing="false" text="Enable time limit" />
       <HBox fx:id="timeLimitContainer" alignment="CENTER" visible="false">
          <children>
-            <TextField fx:id="timeLimitTF" prefWidth="50.0" text="10" />
+            <TextField fx:id="timeLimitTF" prefWidth="50.0" text="5" />
             <Label text="seconds">
                <padding>
                   <Insets left="5.0" />
