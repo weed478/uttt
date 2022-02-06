@@ -13,6 +13,7 @@ public class DrawableField implements IDrawable {
 
     private final Field field;
     private Player highlightedPlayer = null;
+    private boolean isLatestMove = false;
 
     /**
      * Create a drawable wrapper for given field.
@@ -28,6 +29,10 @@ public class DrawableField implements IDrawable {
      */
     public void highlight(Player player) {
         highlightedPlayer = player;
+    }
+
+    public void setIsLatestMove(boolean value) {
+        isLatestMove = value;
     }
 
     @Override
@@ -53,11 +58,11 @@ public class DrawableField implements IDrawable {
             gc.moveTo(0.7, 0.3);
             gc.lineTo(0.3, 0.7);
 
-            gc.setStroke(Color.BLUE);
+            gc.setStroke(isLatestMove ? Color.GREEN : Color.BLUE);
             gc.stroke();
         }
         else if (player == Player.O) {
-            gc.setStroke(Color.RED);
+            gc.setStroke(isLatestMove ? Color.GREEN : Color.RED);
             gc.strokeOval(0.2, 0.2, 0.6, 0.6);
         }
 

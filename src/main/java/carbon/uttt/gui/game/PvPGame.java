@@ -24,8 +24,20 @@ public class PvPGame extends Game implements IInteractiveGame {
 
     @Override
     public void makeMove(Pos9x9 move) {
+        Pos9x9 lastMove = getLastMove();
         Player p = getCurrentPlayer();
         super.makeMove(move);
+
+        // update last move highlight
+        if (lastMove != null) {
+            drawableBoard.getDrawableLocalBoard(lastMove.gp())
+                    .getDrawableField(lastMove.lp())
+                    .setIsLatestMove(false);
+        }
+        drawableBoard.getDrawableLocalBoard(move.gp())
+                .getDrawableField(move.lp())
+                .setIsLatestMove(true);
+
         updateHighlights();
         notifyDrawableStale();
         notifyMoveMade(p, move);
