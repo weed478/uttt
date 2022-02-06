@@ -1,7 +1,9 @@
 package carbon.uttt.gui.game;
 
 import carbon.uttt.ai.IAI;
-import carbon.uttt.ai.RandomAI;
+import carbon.uttt.ai.PMCTS;
+import carbon.uttt.ai.PureGame;
+import carbon.uttt.game.Player;
 import carbon.uttt.game.Pos9x9;
 
 /**
@@ -9,12 +11,12 @@ import carbon.uttt.game.Pos9x9;
  */
 public class PvAIGame extends PvPGame {
 
-    private final IAI ai = new RandomAI(this);
-
     @Override
     public void makeMove(Pos9x9 move) {
         super.makeMove(move);
-        if (getWinner() == null)
+        if (getWinner() == null) {
+            IAI ai = new PMCTS(new PureGame(this), Player.O);
             super.makeMove(ai.decideMove());
+        }
     }
 }

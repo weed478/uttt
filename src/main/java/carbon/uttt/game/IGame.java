@@ -1,5 +1,7 @@
 package carbon.uttt.game;
 
+import java.util.List;
+
 public interface IGame {
 
     /**
@@ -47,4 +49,9 @@ public interface IGame {
      * @return Winner or null.
      */
     Player getWinner();
+
+    /**
+     * Returns a list of all moves made so far (in order).
+     */
+    List<Pos9x9> getMoveHistory();
 }

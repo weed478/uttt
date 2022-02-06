@@ -1,13 +1,12 @@
 package carbon.uttt.game;
 
-import java.util.Arrays;
-import java.util.Stack;
+import java.util.*;
 
 public class Game implements IGame {
 
     private final GlobalBoard board = new GlobalBoard();
     private Player currentPlayer = Player.X;
-    private final Stack<Pos9x9> moveHistory = new Stack<>();
+    private final List<Pos9x9> moveHistory = new ArrayList<>();
 
     public Pos9x9 getLastMove() {
         return moveHistory.isEmpty() ? null : moveHistory.get(moveHistory.size() - 1);
@@ -36,7 +35,7 @@ public class Game implements IGame {
             throw new IllegalArgumentException("Illegal move: " + move);
         }
         board.setField(move, currentPlayer);
-        moveHistory.push(move);
+        moveHistory.add(move);
         currentPlayer = currentPlayer.nextPlayer();
     }
 
@@ -47,7 +46,7 @@ public class Game implements IGame {
 
         board.setField(getLastMove(), null);
         currentPlayer = currentPlayer.nextPlayer();
-        return moveHistory.pop();
+        return moveHistory.remove(moveHistory.size() - 1);
     }
 
     @Override
@@ -76,6 +75,11 @@ public class Game implements IGame {
     @Override
     public Player getWinner() {
         return board.getFieldOwner();
+    }
+
+    @Override
+    public List<Pos9x9> getMoveHistory() {
+        return moveHistory;
     }
 
     /**
