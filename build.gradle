@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'scala'
     id 'application'
     id 'org.openjfx.javafxplugin' version '0.0.10'
 }
@@ -14,6 +15,9 @@ repositories {
 ext {
     junitVersion = '5.8.2'
 }
+
+sourceSets.main.scala.srcDir "src/main/java"
+sourceSets.main.java.srcDirs = []
 
 sourceCompatibility = '11'
 targetCompatibility = '11'
@@ -32,6 +36,7 @@ javafx {
 }
 
 dependencies {
+    implementation 'org.scala-lang:scala-library:2.13.6'
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }
